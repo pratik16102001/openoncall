@@ -11,4 +11,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("healthz/", healthz, name="healthz"),
     path("api/v1/", include("config.api_urls")),
+    path("webhooks/", include("apps.alerts.urls")),
 ]
