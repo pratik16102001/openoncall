@@ -48,6 +48,9 @@ class Team(TimeStampedModel):
     slug = models.SlugField(unique=True)
     slack_webhook_url = models.URLField(blank=True, null=True)
 
+    class Meta:
+        ordering = ["name"]
+
     def __str__(self):
         return self.name
 
