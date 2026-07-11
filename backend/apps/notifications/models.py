@@ -43,3 +43,15 @@ class NotificationAttempt(TimeStampedModel):
 
     def __str__(self):
         return f"{self.channel} to {self.user} for incident #{self.incident_id} ({self.status})"
+
+
+class PushSubscription(TimeStampedModel):
+    """A browser's Web Push subscription, registered from the frontend."""
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="push_subscription"
+    )
+    subscription_info = models.JSONField()
+
+    def __str__(self):
+        return f"Push subscription for {self.user}"

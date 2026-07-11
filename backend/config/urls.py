@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.http import JsonResponse
 from django.urls import include, path
 
+from apps.notifications.views import SlackInteractivityView
+
 
 def healthz(request):
     return JsonResponse({"status": "ok"})
@@ -12,4 +14,5 @@ urlpatterns = [
     path("healthz/", healthz, name="healthz"),
     path("api/v1/", include("config.api_urls")),
     path("webhooks/", include("apps.alerts.urls")),
+    path("webhooks/slack/interactivity/", SlackInteractivityView.as_view(), name="slack-interactivity"),
 ]
