@@ -25,3 +25,35 @@ def acknowledge_incident(incident, actor=None):
         message=f"Acknowledged by {actor}." if actor else "Acknowledged.",
     )
     return incident
+
+
+def resolve_incident(incident, actor=None):
+    """Resolve an incident. Allowed from any non-resolved status -- an
+    incident can be resolved without ever being acknowledged (e.g. the
+    underlying condition self-healed), same as the auto-resolve path in
+    alerts.services.ingest_alert. Idempotent for the same reason as
+    acknowledge_incident.
+    """
+    if incident.status == Incident.STATUS_RESOLVED:
+        return incident
+
+    incident.status = Incident.STATUS_RESOLVED
+    incident.resolved_at = timezone.now()
+    incident.save(update_fields=["status", "resolved_at", "updated_at"])
+
+    TimelineEvent.objects.create(
+        incident=incident,
+        event_type=TimelineEvent.EVENT_RESOLVED,
+        actor=actor,
+        message=f"Resolved by {actor}." if actor else "Resolved.",
+    )
+    return incident
+
+
+def add_note(incident, actor, message):
+    return TimelineEvent.objects.create(
+        incident=incident,
+        event_type=TimelineEvent.EVENT_NOTE_ADDED,
+        actor=actor,
+        message=message,
+    )
