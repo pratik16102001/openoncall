@@ -1,3 +1,4 @@
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import BasePermission
 
 from .models import Team, TeamMembership
@@ -41,3 +42,18 @@ class TeamScopedQuerySetMixin:
             "team_id", flat=True
         )
         return qs.filter(**{f"{self.team_field}__in": user_teams}).distinct()
+
+
+class TeamOwnedCreateMixin:
+    """Guards the `create` action for resources that carry a writable `team`
+    field directly in the request body (Schedule, EscalationPolicy,
+    Service). IsTeamMember is an object-level check -- it can't stop a
+    client from POSTing an arbitrary team id it doesn't belong to, since
+    there's no object yet at create time. This closes that gap.
+    """
+
+    def perform_create(self, serializer):
+        team = serializer.validated_data.get("team")
+        if team is None or not TeamMembership.objects.filter(team=team, user=self.request.user).exists():
+            raise PermissionDenied("You are not a member of this team.")
+        serializer.save()
