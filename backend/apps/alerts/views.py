@@ -28,13 +28,18 @@ class AlertWebhookView(APIView):
         if service is None:
             raise Http404
 
-        normalized = normalize_payload(self.source, request.data)
-        alert, incident, created = ingest_alert(
-            service=service,
-            source=self.source,
-            normalized=normalized,
-            raw_payload=request.data,
-        )
+        items = normalize_payload(self.source, request.data)
+        any_created = False
+        for normalized, raw_item in items:
+            _alert, _incident, created = ingest_alert(
+                service=service,
+                source=self.source,
+                normalized=normalized,
+                raw_payload=raw_item,
+            )
+            any_created = any_created or created
+
         return Response(
-            {"status": "ok"}, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK
+            {"status": "ok", "processed": len(items)},
+            status=status.HTTP_201_CREATED if any_created else status.HTTP_200_OK,
         )
