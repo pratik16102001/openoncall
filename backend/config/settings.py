@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -95,6 +96,11 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -146,14 +152,20 @@ VAPID_ADMIN_EMAIL = env("VAPID_ADMIN_EMAIL", default="")
 SLACK_SIGNING_SECRET = env("SLACK_SIGNING_SECRET", default="")
 
 # --- Frontend base URL (used to build links in outbound notifications) -------
+# Defaults to the production docker-compose.yml's nginx-served frontend
+# (port 80). Override for a real domain in production, or if you're only
+# ever running the docker-compose.dev.yml overlay (Vite dev server on
+# :5173) day to day.
 
-FRONTEND_BASE_URL = env("FRONTEND_BASE_URL", default="http://localhost:5173")
+FRONTEND_BASE_URL = env("FRONTEND_BASE_URL", default="http://localhost")
 
 # --- CORS ---------------------------------------------------------------------
 # The SPA is served from a different origin (Vite dev server / nginx) than
-# the API, so browser requests need explicit CORS allowance.
+# the API, so browser requests need explicit CORS allowance. Covers both
+# the production port (nginx, :80) and the dev overlay's Vite dev server
+# (:5173) by default, since the same .env is used for both.
 
 CORS_ALLOWED_ORIGINS = env.list(
     "CORS_ALLOWED_ORIGINS",
-    default=[FRONTEND_BASE_URL, "http://127.0.0.1:5173", "http://localhost:5173"],
+    default=[FRONTEND_BASE_URL, "http://localhost:5173", "http://127.0.0.1:5173"],
 )
