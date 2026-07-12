@@ -1,0 +1,73 @@
+{
+  "users": [
+    {"id": "U_ALICE", "email": "alice@example.com", "username": "alice"},
+    {"id": "U_BOB", "email": "bob@example.com", "username": "bob"},
+    {"id": "U_CAROL", "email": "carol@example.com", "username": "carol"},
+    {"id": "U_UNKNOWN_ACCOUNT", "email": "ghost@example.com", "username": "ghost"}
+  ],
+  "schedules": [
+    {
+      "id": "S1",
+      "name": "Primary On-Call",
+      "team_id": "T1",
+      "type": "calendar",
+      "on_call_shifts": ["OC1"]
+    }
+  ],
+  "on_call_shifts": [
+    {
+      "id": "OC1",
+      "name": "Weekly rotation",
+      "type": "rolling_users",
+      "start": "2026-01-05T09:00:00",
+      "duration": 604800,
+      "frequency": "weekly",
+      "interval": 1,
+      "time_zone": "America/New_York",
+      "rolling_users": [["U_ALICE"], ["U_BOB"], ["U_CAROL"]]
+    }
+  ],
+  "escalation_chains": [
+    {"id": "EC1", "name": "Default Escalation Chain", "team_id": "T1"}
+  ],
+  "escalation_policies": [
+    {
+      "id": "EP1",
+      "escalation_chain_id": "EC1",
+      "position": 0,
+      "type": "notify_persons",
+      "persons_to_notify": ["U_ALICE"],
+      "wait_delay": 300
+    },
+    {
+      "id": "EP2",
+      "escalation_chain_id": "EC1",
+      "position": 1,
+      "type": "notify_persons",
+      "persons_to_notify": ["U_BOB", "U_CAROL"],
+      "wait_delay": 600
+    },
+    {
+      "id": "EP3",
+      "escalation_chain_id": "EC1",
+      "position": 2,
+      "type": "notify_user_group",
+      "wait_delay": 300
+    },
+    {
+      "id": "EP4",
+      "escalation_chain_id": "EC1",
+      "position": 3,
+      "type": "resolve",
+      "wait_delay": 0
+    },
+    {
+      "id": "EP5",
+      "escalation_chain_id": "EC1",
+      "position": 4,
+      "type": "notify_persons",
+      "persons_to_notify": ["U_UNKNOWN_ACCOUNT", "U_DOES_NOT_EXIST"],
+      "wait_delay": 300
+    }
+  ]
+}
