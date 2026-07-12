@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "django_celery_beat",
+    "corsheaders",
     "apps.accounts",
     "apps.schedules",
     "apps.escalation",
@@ -41,6 +42,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -146,3 +148,12 @@ SLACK_SIGNING_SECRET = env("SLACK_SIGNING_SECRET", default="")
 # --- Frontend base URL (used to build links in outbound notifications) -------
 
 FRONTEND_BASE_URL = env("FRONTEND_BASE_URL", default="http://localhost:5173")
+
+# --- CORS ---------------------------------------------------------------------
+# The SPA is served from a different origin (Vite dev server / nginx) than
+# the API, so browser requests need explicit CORS allowance.
+
+CORS_ALLOWED_ORIGINS = env.list(
+    "CORS_ALLOWED_ORIGINS",
+    default=[FRONTEND_BASE_URL, "http://127.0.0.1:5173", "http://localhost:5173"],
+)
