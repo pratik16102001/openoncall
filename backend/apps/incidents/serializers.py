@@ -38,9 +38,13 @@ class IncidentSerializer(serializers.ModelSerializer):
 
 class IncidentDetailSerializer(IncidentSerializer):
     timeline = TimelineEventSerializer(source="timeline_events", many=True, read_only=True)
+    runbook_url = serializers.URLField(source="service.runbook_url", read_only=True, default=None)
+    runbook_markdown = serializers.CharField(
+        source="service.runbook_markdown", read_only=True, default=None
+    )
 
     class Meta(IncidentSerializer.Meta):
-        fields = IncidentSerializer.Meta.fields + ["timeline"]
+        fields = IncidentSerializer.Meta.fields + ["timeline", "runbook_url", "runbook_markdown"]
 
 
 class NoteSerializer(serializers.Serializer):

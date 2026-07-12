@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from apps.accounts.permissions import IsTeamMember, TeamScopedQuerySetMixin
 
 from .models import Incident
+from .postmortem import generate_postmortem_markdown
 from .serializers import IncidentDetailSerializer, IncidentSerializer, NoteSerializer
 from .services import acknowledge_incident, add_note, resolve_incident
 
@@ -59,3 +60,8 @@ class IncidentViewSet(
         serializer.is_valid(raise_exception=True)
         add_note(incident, actor=request.user, message=serializer.validated_data["message"])
         return Response(status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=["get"])
+    def postmortem(self, request, pk=None):
+        incident = self.get_object()
+        return Response({"markdown": generate_postmortem_markdown(incident)})
