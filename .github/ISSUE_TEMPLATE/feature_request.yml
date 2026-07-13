@@ -1,0 +1,33 @@
+name: Feature request
+description: Suggest an idea or improvement
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before requesting a feature, a quick check: OpenOnCall's v1 scope explicitly excludes
+        monitoring/metrics ingestion, public status pages, native mobile apps, SSO/SAML, AI-generated
+        summaries, and multi-region deployment (see the README's Scope section). Feature requests in
+        those areas are unlikely to be accepted for v1.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+      description: Describe the situation this would help with, not just the feature itself.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What would you like to happen? Sketch the behavior, API shape, or UI if relevant.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any other approaches you thought about, and why you didn't prefer them.

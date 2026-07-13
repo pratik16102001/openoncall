@@ -1,10 +1,14 @@
 # OpenOnCall
 
+[![CI](https://github.com/pratik16102001/openoncall/actions/workflows/ci.yml/badge.svg)](https://github.com/pratik16102001/openoncall/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
+
 A self-hosted, open-source incident coordination and on-call paging platform. It ingests alerts from external monitoring tools (Prometheus Alertmanager, Datadog, CloudWatch, Sentry, or a generic webhook), pages the correct on-call responder via an escalation policy, tracks the full incident timeline automatically, and generates a postmortem draft on resolution.
 
 OpenOnCall does **not** do monitoring/metrics itself — point your existing monitoring at it, it handles paging and incident coordination from there.
 
-Licensed under the [MIT License](LICENSE).
+Licensed under the [MIT License](LICENSE). Contributions welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). This project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md). Found a security issue? See [SECURITY.md](SECURITY.md) rather than opening a public issue.
 
 ## Quickstart (~5 minutes)
 
@@ -112,3 +116,12 @@ openoncall/
 **In scope:** teams and on-call schedules with rotation + overrides, escalation policies, services with webhook integrations, alert ingestion from 5 sources, full incident lifecycle with automatic timeline, multi-channel notifications (Slack, SMS, voice, web push) with fallback on timeout, runbooks, postmortem export, a Grafana OnCall migration helper.
 
 **Explicitly out of scope for v1:** monitoring/metrics ingestion, public status pages, native mobile apps, SSO/SAML, AI-generated summaries, multi-region deployment.
+
+## Contributing
+
+Bug reports, feature requests, and pull requests are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for
+dev setup, coding conventions, and the areas of the codebase where test coverage is non-negotiable
+(escalation timing, notification fallback, dedup, team-scoping, schedule timezone/DST correctness — see
+why in [CONTRIBUTING.md](CONTRIBUTING.md#tests)).
+
+Release history is in [CHANGELOG.md](CHANGELOG.md).
