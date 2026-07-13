@@ -78,6 +78,10 @@ The `.env.example` defaults get you a working local instance, not a hardened pub
 - Set `DEBUG=False` (already the `.env.example` default) and set `ALLOWED_HOSTS` to your real domain.
 - Terminate TLS in front of this stack (a reverse proxy, load balancer, or Caddy/nginx with a cert) — Docker Compose here is a self-hosted *reference* deployment and doesn't include HTTPS termination. Once you have it, also set Django's `SECURE_SSL_REDIRECT`, `SESSION_COOKIE_SECURE`, and `CSRF_COOKIE_SECURE` to `True`.
 - Run `docker compose exec web python manage.py check --deploy` — it'll flag anything above you missed.
+- `db` and `redis` are published to the host (on `5433`/`6380`) for local dev tooling — see
+  [Running the backend outside Docker](#running-the-backend-outside-docker). On an internet-facing host,
+  firewall those ports (or drop the `ports:` mappings entirely if you don't need host-side access) so
+  they're not reachable from outside your network.
 
 ## Development
 
@@ -97,6 +101,19 @@ Frontend tests:
 
 ```bash
 cd frontend && npm install && npm run test
+```
+
+### Running the backend outside Docker
+
+`docker-compose.yml` publishes `db` and `redis` on the host at `5433` and `6380` (not their default
+`5432`/`6379`, so they don't collide with any Postgres/Redis you already have running locally) — that lets
+`manage.py`, `pytest`, or a GUI client on your machine reach the same database the Docker stack uses.
+`backend/.env` is already set up for this (`DATABASE_URL`/`REDIS_URL` pointing at `localhost:5433`/`6380`).
+With the stack up (`docker compose up -d`) and a venv with `pip install -r backend/requirements.txt`:
+
+```bash
+cd backend
+python manage.py runserver 0.0.0.0:8001   # :8000 is already taken by the Docker web container
 ```
 
 ## Repository layout

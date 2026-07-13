@@ -8,6 +8,13 @@ services:
       POSTGRES_DB: openoncall
     volumes:
       - db_data:/var/lib/postgresql/data
+    # Published on 5433 (not the default 5432) so it doesn't collide with a
+    # Postgres you might already have running locally -- lets host-side
+    # tooling (a local `manage.py`, psql, a GUI client) reach this same
+    # database. Container-to-container traffic (the web/worker/beat
+    # services) still uses the internal `db:5432` address regardless.
+    ports:
+      - "5433:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U openoncall"]
       interval: 5s
@@ -17,6 +24,10 @@ services:
   redis:
     image: redis:7
     restart: unless-stopped
+    # Same reasoning as db's port above -- 6380 to avoid colliding with a
+    # local Redis.
+    ports:
+      - "6380:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
